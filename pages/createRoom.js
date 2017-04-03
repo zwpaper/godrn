@@ -182,7 +182,7 @@ export default class CreateRoom extends Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    uid: this.props.uid,
+                    uid:getUniqueID().replace(/-/g, ""),
                     name: this.props.name,
                     wolves: this.state.wolves,
                     villagers: this.state.villagers,

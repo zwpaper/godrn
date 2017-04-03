@@ -11,7 +11,6 @@ import {
     AlertIOS,
 } from 'react-native';
 import {Actions} from 'react-native-router-flux';
-import {getUniqueID} from "react-native-device-info";
 
 export default class Start extends Component {
     constructor(progs) {
@@ -70,30 +69,10 @@ export default class Start extends Component {
             Alert.alert("No Room number provided", "Please input a number");
             return
         }
-        try {
-            let CONST_DATA = require("./global.js");
-            let response = await fetch(CONST_DATA.SERVER_URL + '/room/'+number+"/player", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    uid: getUniqueID().replace(/-/g, ""),
-                    name: this.state.name,
-                    room_id: number,
-                })
-            });
-            let responseJson = await response.json();
-            responseJson["name"]=this.props.name;
-            console.log(responseJson);
-            Actions.Game(responseJson);
-        } catch (error) {
-            console.error(JSON.stringify({
-                "room": this.state.name,
-            }));
-            console.error(error);
-        }
+        Actions.Game({
+            name: this.state.name,
+            room_id: number
+        });
     }
 
     toCreateRoom() {
@@ -102,7 +81,6 @@ export default class Start extends Component {
             return
         }
         Actions.CreateRoom({
-            uid:getUniqueID().replace(/-/g, ""),
             name: this.state.name})
     }
 }
