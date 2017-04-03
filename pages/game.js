@@ -54,7 +54,7 @@ export default class Game extends Component {
                 keyboardShouldPersistTaps='never'>
                 <View style={styles.roomNumber}>
                     <Text style={styles.textProgress}>Room Number:</Text>
-                    <Text style={styles.textProgress}>{this.state.id}</Text>
+                    <Text style={styles.textProgress}>{this.props.room_id}</Text>
                 </View>
                 <View style={styles.actors}>
                     {actorList}
@@ -102,26 +102,31 @@ export default class Game extends Component {
             return
         }
         try {
-            let CONST_DATA = require("./global.js");
-            let js = fetch(CONST_DATA.SERVER_URL + '/room/'+number+"/player", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            const CONST_DATA = require("./global.js");
+            let ws = new WebSocket(CONST_DATA.WEB_SOCKET_URL + '/room/'+number+"/player");
+            ws.onopen = () => {
+                // connection opened
+                ws.send(JSON.stringify({
+                    op: "enter",
                     uid: getUniqueID().replace(/-/g, ""),
                     name: this.props.name,
                     room_id: number,
-                })
-            }).then((response) => response.json())
-                .then((responseJson) => {
-                    console.log(responseJson);
-                    this.setState({number: responseJson.number, id: responseJson.room_id, actors: responseJson.players});})
-                .catch((error) => {
-                    throw(error);
-                })
-                .done();
+                })); // send a message
+            };
+            ws.onmessage = (e) => {
+                // a message was received
+                let responseJson = JSON.parse(e.data);
+                this.setState({number: responseJson.number, id: responseJson.room_id, actors: responseJson.players});
+            };
+            ws.onerror = (e) => {
+                // an error occurred
+                console.log(e.message);
+            };
+            ws.onclose = (e) => {
+                // connection closed
+                console.log(e.code, e.reason);
+            };
+
             return true
         } catch (error) {
             Alert.alert('Enter room error', error.toString());

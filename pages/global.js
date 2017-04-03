@@ -4,7 +4,8 @@
 
 module.exports = {
     STORE_KEY: 'a56z0fzrNpl^2',
-    SERVER_URL: "http://192.168.123.32:8080",
+    SERVER_URL: "http://127.0.0.1:8080",
+    WEB_SOCKET_URL: "ws://127.0.0.1:8080",
     COLOR: {
         ORANGE: '#C50',
         DARKBLUE: '#0F3274',
