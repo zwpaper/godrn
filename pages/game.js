@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    Alert,
     View,
     Text,
     ScrollView,
@@ -7,18 +8,22 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
+import {getUniqueID} from "react-native-device-info";
 import {Actions} from 'react-native-router-flux';
 
 export default class Game extends Component {
     constructor(progs) {
         super(progs);
-        this.state = {status: "Not Start", todo: "Start"}
+        this.state = {status: "Not Start", todo: "Start", user: "Not in", actors: [],number: 0};
+        if (!this.enterRoom(this.props.room_id)) {
+            Actions.pop();
+        }
     }
     render() {
-        var actor = [];
-        for (var i = 2; i < this.props.number+1; i++) {
-            let key = "player"+i;
-            actor.push(
+        var actorList = [];
+        this.state.actors.forEach((value, index)=>{
+            let key = "player"+index;
+            actorList.push(
                 <View
                     key={key}
                     style={styles.actor}>
@@ -26,7 +31,20 @@ export default class Game extends Component {
                         source={require('./img/actor.png')}
                         style={styles.actorPic}
                     />
-                    <Text style={styles.actorName}>{i}. Passby</Text>
+                    <Text style={styles.actorName}>{index+1}. {value.Name}</Text>
+                </View>);
+        });
+        for (var i = this.state.actors.length; i < this.state.number; i++) {
+            let key = "player"+i;
+            actorList.push(
+                <View
+                    key={key}
+                    style={styles.actor}>
+                    <Image
+                        source={require('./img/actor.png')}
+                        style={styles.actorPic}
+                    />
+                    <Text style={styles.actorName}>{i+1}. {this.state.user}</Text>
                 </View>);
         }
         return (
@@ -36,17 +54,10 @@ export default class Game extends Component {
                 keyboardShouldPersistTaps='never'>
                 <View style={styles.roomNumber}>
                     <Text style={styles.textProgress}>Room Number:</Text>
-                    <Text style={styles.textProgress}>{this.props.id}</Text>
+                    <Text style={styles.textProgress}>{this.state.id}</Text>
                 </View>
                 <View style={styles.actors}>
-                    <View style={styles.actor}>
-                        <Image
-                            source={require('./img/actor.png')}
-                            style={styles.actorPic}
-                        />
-                        <Text style={styles.actorName}>1. {this.props.name}</Text>
-                    </View>
-                    {actor}
+                    {actorList}
                 </View>
                 <View
                     style={styles.pregress}>
@@ -60,7 +71,6 @@ export default class Game extends Component {
                     <Text style={styles.text}>{this.state.todo}</Text>
                 </TouchableOpacity>
             </ScrollView>
-
         );
     }
 
@@ -83,6 +93,39 @@ export default class Game extends Component {
                 room: this.state.input,
             }));
             console.error(error);
+        }
+    }
+
+    enterRoom(number) {
+        if (number === "" || number === null) {
+            Alert.alert("No Room number provided", "Please input a number");
+            return
+        }
+        try {
+            let CONST_DATA = require("./global.js");
+            let js = fetch(CONST_DATA.SERVER_URL + '/room/'+number+"/player", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uid: getUniqueID().replace(/-/g, ""),
+                    name: this.props.name,
+                    room_id: number,
+                })
+            }).then((response) => response.json())
+                .then((responseJson) => {
+                    console.log(responseJson);
+                    this.setState({number: responseJson.number, id: responseJson.room_id, actors: responseJson.players});})
+                .catch((error) => {
+                    throw(error);
+                })
+                .done();
+            return true
+        } catch (error) {
+            Alert.alert('Enter room error', error.toString());
+            return false
         }
     }
 }
