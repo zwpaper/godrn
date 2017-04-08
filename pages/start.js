@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 10,
         alignItems: 'center',
-        backgroundColor: '#F5FCFF'
+        backgroundColor: '#F5FCFF',
     },
     logo: {
         width: 160,
@@ -107,9 +107,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 40,
         marginBottom: 40,
-        borderWidth: 1,
-        borderRadius: 0,
-        borderColor: 'lightblue'
+        shadowColor: '#000000',
+        backgroundColor: '#fff',
+        shadowOffset: {
+            width: 0,
+            height: 1
+        },
+        shadowRadius: 2,
+        shadowOpacity: 0.3
     },
     text: {
         fontWeight: 'bold',
@@ -123,7 +128,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'coral',
         height: 40,
         borderRadius: 0,
-        marginTop: 20
+        marginTop: 20,
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 1
+        },
+        shadowRadius: 2,
+        shadowOpacity: 0.3
     },
     company: {
         flex: 1,

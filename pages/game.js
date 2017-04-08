@@ -7,7 +7,7 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    Button, TouchableHighlight
+    TouchableHighlight,Navigator
 } from 'react-native';
 import {getUniqueID} from "react-native-device-info";
 import {Actions} from 'react-native-router-flux';
@@ -55,12 +55,12 @@ export default class Game extends Component {
                 contentContainerStyle={styles.container}
                 keyboardDismissMode='on-drag'
                 keyboardShouldPersistTaps='never'>
+                <View style={styles.actors}>
+                    {actorList}
+                </View>
                 <View style={styles.roomNumber}>
                     <Text style={styles.textProgress}>Room Number:</Text>
                     <Text style={styles.textProgress}>{this.props.room_id}</Text>
-                </View>
-                <View style={styles.actors}>
-                    {actorList}
                 </View>
                 <View
                     style={styles.progress}>
@@ -146,31 +146,33 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#42A5F5',
-        paddingTop: 70,
-    },
-    roomNumber: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: '#42A5F5'
+        paddingTop: Navigator.NavigationBar.Styles.General.TotalNavHeight + 10,
     },
     actors: {
-        flex: 8,
+        flex: 9,
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
         backgroundColor: '#64B5F6',
-        borderRadius:7,
-        paddingTop: 10,
+        borderRadius:5,
+        paddingTop: 6,
         paddingBottom: 10,
-
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 3
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.5
     },
     actor: {
         paddingLeft: width / 70,
         paddingRight: width / 70,
-        paddingTop: 10,
+        paddingTop: 7,
         backgroundColor:'#64B5F6',
+        borderTopWidth: 3,
         borderBottomWidth: 1,
-        borderRightWidth: 1,
+        borderRightWidth: 3,
         borderColor: '#42A5F5',
     },
     // actorPic: {
@@ -184,6 +186,13 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         width: width / 5,
         height: width / 5,
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 1
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.3
     },
     actorPicText: {
         marginTop: width / 10,
@@ -196,6 +205,7 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
     },
     actorName: {
+        backgroundColor: "transparent",
         textAlign: 'center',
         fontSize: 16,
         fontWeight: 'bold',
@@ -203,6 +213,13 @@ const styles = StyleSheet.create({
     },
     beforeStart: {
         opacity: 0,
+    },
+    roomNumber: {
+        flex: 1,
+        marginTop: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'transparent'
     },
     progress: {
         flex: 1,
