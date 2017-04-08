@@ -26,7 +26,7 @@ export default class godOfWerewolves extends Component {
 
 const styles = StyleSheet.create({
     navBar: {
-        backgroundColor: 'deepskyblue' // changing navbar color
+        backgroundColor: '#2196F3' // changing navbar color
     }
 });
 
