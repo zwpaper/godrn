@@ -16,6 +16,7 @@ export default class Game extends Component {
     constructor(progs) {
         super(progs);
         this.state = {status: "Not Start", todo: "Start", user: "Not in", actors: [], number: 0};
+        let machine = this.stateMachine()
         if (!this.enterRoom(this.props.room_id)) {
             Actions.pop();
         }
@@ -23,7 +24,10 @@ export default class Game extends Component {
 
     render() {
         var actorList = [];
-        this.state.actors.forEach((value, index) => {
+        actors = this.state.actors;
+        actors.sort((a, b)=> {return a.order - b.order});
+        console.log(actors);
+        actors.forEach((value, index) => {
             let key = index + 1;
             actorList.push(
                 <View
@@ -33,7 +37,7 @@ export default class Game extends Component {
                         style={styles.actorPic}>
                         <Text style={styles.actorPicText}>{index + 1}</Text>
                     </TouchableHighlight>
-                    <Text style={styles.actorName}>{value.Name}</Text>
+                    <Text style={styles.actorName}>{value.name}</Text>
                 </View>);
         });
         for (var i = this.state.actors.length; i < this.state.number; i++) {
@@ -118,7 +122,7 @@ export default class Game extends Component {
             ws.onmessage = (e) => {
                 // a message was received
                 let responseJson = JSON.parse(e.data);
-                this.setState({number: responseJson.number, id: responseJson.room_id, actors: responseJson.players});
+                machine.get(responseJson.op)(this,responseJson)
             };
             ws.onerror = (e) => {
                 // an error occurred
@@ -134,6 +138,16 @@ export default class Game extends Component {
             Alert.alert('Enter room error', error.toString());
             return false
         }
+    }
+
+    playerEnter(a,data) {
+        a.setState({number: data.number, id: data.room_id, actors: data.players});
+    }
+
+    stateMachine() {
+        machine = new Map();
+        machine.set("enter", this.playerEnter);
+        return machine
     }
 }
 
