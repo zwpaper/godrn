@@ -31,10 +31,8 @@ export default class Game extends Component {
 
     render() {
         var actorList = [];
-        actors = this.state.actors;
-        actors.sort((a, b)=> {return a.order - b.order});
-        console.log(actors);
-        actors.forEach((value, index) => {
+        this.state.actors.sort((a, b)=> {return a.order - b.order});
+        this.state.actors.forEach((value, index) => {
             let key = index + 1;
             actorList.push(
                 <View
