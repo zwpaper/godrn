@@ -24,10 +24,11 @@ export default class Game extends Component {
             btn: styles.btnDisable,
             btnDisable: true};
         let machine = this.stateMachine();
+        this.targetID = getUniqueID().replace(/-/g, "");
         if (!this.enterRoom(this.props.room_id)) {
             Actions.pop();
         }
-        let ws = WebSocket;
+
     }
 
     render() {
@@ -35,13 +36,20 @@ export default class Game extends Component {
         this.state.actors.sort((a, b)=> {return a.order - b.order});
         this.state.actors.forEach((value, index) => {
             let key = index + 1;
+            var order;
+            if (value.status == "ready") {
+                order = "✓";
+
+            } else {
+                order = index + 1;
+            }
             actorList.push(
                 <View
                     key={key}
                     style={styles.actor}>
                     <TouchableHighlight
                         style={styles.actorPic}>
-                        <Text style={styles.actorPicText}>{index + 1}</Text>
+                        <Text style={styles.actorPicText}>{order}</Text>
                     </TouchableHighlight>
                     <Text style={styles.actorName}>{value.name}</Text>
                 </View>);
@@ -80,34 +88,17 @@ export default class Game extends Component {
                 <TouchableOpacity
                     style={this.state.btn}
                     disabled={this.state.btnDisable}
-                    onPress={() => this.start()}>
+                    onPress={() => {this.ws.send(JSON.stringify({
+                        op: "ready",
+                        uid: this.targetID,
+                    }));
+                    this.setState({btn: styles.btnDisable, btnDisable: true})}}>
                     <Text style={styles.text}>{this.state.todo}</Text>
                 </TouchableOpacity>
             </ScrollView>
         );
     }
 
-    async start() {
-        try {
-            // let response = await fetch(ServerAddress + '/rooms', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Accept': 'application/json',
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({
-            //         room: this.state.input,
-            //     })
-            // });
-            // let responseJson = await response.json();
-            // console.log(this.state.input);6
-        } catch (error) {
-            console.error(JSON.stringify({
-                room: this.state.input,
-            }));
-            console.error(error);
-        }
-    }
 
     enterRoom(number) {
         if (number === "" || number === null) {
@@ -121,7 +112,7 @@ export default class Game extends Component {
                 // connection opened
                 this.ws.send(JSON.stringify({
                     op: "enter",
-                    uid: getUniqueID().replace(/-/g, ""),
+                    uid: this.targetID,
                     name: this.props.name,
                     room_id: number,
                 })); // send a message
@@ -147,19 +138,24 @@ export default class Game extends Component {
         }
     }
 
-    playerEnter(a,data) {
+    playerEnter(obj, data) {
         if(data.players.length === data.number) {
-            a.setState({number: data.number, id: data.room_id, actors: data.players,
+            obj.setState({number: data.number, id: data.room_id, actors: data.players,
                 btn: styles.btn, btnDisable: false,
                 todo: "Ready"});
         } else {
-            a.setState({number: data.number, id: data.room_id, actors: data.players});
+            obj.setState({number: data.number, id: data.room_id, actors: data.players});
         }
+    }
+
+    playerReady(obj, data) {
+        obj.setState({actors: data.players});
     }
 
     stateMachine() {
         machine = new Map();
         machine.set("enter", this.playerEnter);
+        machine.set("ready", this.playerReady);
         return machine
     }
 }
