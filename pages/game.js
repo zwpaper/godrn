@@ -27,6 +27,7 @@ export default class Game extends Component {
         if (!this.enterRoom(this.props.room_id)) {
             Actions.pop();
         }
+        let ws = WebSocket;
     }
 
     render() {
@@ -115,26 +116,26 @@ export default class Game extends Component {
         }
         try {
             const CONST_DATA = require("./global.js");
-            let ws = new WebSocket(CONST_DATA.WEB_SOCKET_URL + '/room/' + number + "/player");
-            ws.onopen = () => {
+            this.ws = new WebSocket(CONST_DATA.WEB_SOCKET_URL + '/room/' + number + "/player");
+            this.ws.onopen = () => {
                 // connection opened
-                ws.send(JSON.stringify({
+                this.ws.send(JSON.stringify({
                     op: "enter",
                     uid: getUniqueID().replace(/-/g, ""),
                     name: this.props.name,
                     room_id: number,
                 })); // send a message
             };
-            ws.onmessage = (e) => {
+            this.ws.onmessage = (e) => {
                 // a message was received
                 let responseJson = JSON.parse(e.data);
                 machine.get(responseJson.op)(this,responseJson)
             };
-            ws.onerror = (e) => {
+            this.ws.onerror = (e) => {
                 // an error occurred
                 console.log(e.message);
             };
-            ws.onclose = (e) => {
+            this.ws.onclose = (e) => {
                 // connection closed
                 console.log(e.code, e.reason);
             };
@@ -147,7 +148,13 @@ export default class Game extends Component {
     }
 
     playerEnter(a,data) {
-        a.setState({number: data.number, id: data.room_id, actors: data.players});
+        if(data.players.length === data.number) {
+            a.setState({number: data.number, id: data.room_id, actors: data.players,
+                btn: styles.btn, btnDisable: false,
+                todo: "Ready"});
+        } else {
+            a.setState({number: data.number, id: data.room_id, actors: data.players});
+        }
     }
 
     stateMachine() {
