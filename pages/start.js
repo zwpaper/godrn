@@ -15,7 +15,7 @@ import {Actions} from 'react-native-router-flux';
 export default class Start extends Component {
     constructor(progs) {
         super(progs);
-        this.state = {input: "123", name: ""}
+        this.state = {input: "123", name: "", inputFocus: styles.input}
     }
 
     render() {
@@ -30,9 +30,11 @@ export default class Start extends Component {
                         style={styles.logo}
                     />
                     <TextInput
-                        style={styles.input}
+                        style={this.state.inputFocus}
                         placeholder='Name'
                         defaultValue={this.state.name}
+                        onFocus={()=>this.state.inputFocus = styles.inputFocus}
+                        onEndEditing={()=>this.state.inputFocus = styles.input}
                         onChangeText={(text) => this.setState({name: text})}
                     />
                     <TouchableOpacity
@@ -115,6 +117,19 @@ const styles = StyleSheet.create({
         },
         shadowRadius: 2,
         shadowOpacity: 0.3
+    },
+    inputFocus: {
+        textAlign: 'center',
+        height: 40,
+        marginBottom: 40,
+        shadowColor: '#000000',
+        backgroundColor: '#fff',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowRadius: 4,
+        shadowOpacity: 0.4
     },
     text: {
         fontWeight: 'bold',
