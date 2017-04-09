@@ -15,8 +15,15 @@ import {Actions} from 'react-native-router-flux';
 export default class Game extends Component {
     constructor(progs) {
         super(progs);
-        this.state = {status: "Not Start", todo: "Start", user: "Not in", actors: [], number: 0};
-        let machine = this.stateMachine()
+        this.state = {
+            status: "Not Start",
+            todo: "Waiting",
+            user: "Not in",
+            actors: [],
+            number: 0,
+            btn: styles.btnDisable,
+            btnDisable: true};
+        let machine = this.stateMachine();
         if (!this.enterRoom(this.props.room_id)) {
             Actions.pop();
         }
@@ -72,7 +79,8 @@ export default class Game extends Component {
                 </View>
 
                 <TouchableOpacity
-                    style={styles.btn}
+                    style={this.state.btn}
+                    disabled={this.state.btnDisable}
                     onPress={() => this.start()}>
                     <Text style={styles.text}>{this.state.todo}</Text>
                 </TouchableOpacity>
@@ -256,6 +264,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#2ee940',
+        height: 35,
+        borderRadius: 0,
+    },
+    btnDisable: {
+        alignSelf: 'stretch', //非常重要，覆盖父样式
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#9E9E9E',
         height: 35,
         borderRadius: 0,
     },
