@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
         paddingTop: Navigator.NavigationBar.Styles.General.TotalNavHeight + 10,
     },
     actors: {
-        flex: 9,
+        flex: 12,
         flexDirection: 'row',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     },
     textProgress: {
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 18,
         color: '#000',
     },
     text: {
@@ -242,8 +242,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#2ee940',
-        height: 40,
+        height: 35,
         borderRadius: 0,
-        marginTop: 10
     },
 });
